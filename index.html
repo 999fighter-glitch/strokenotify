@@ -49,16 +49,97 @@
                 cursor: pointer;
                 padding-left: 0.5rem;
             }
+            .modal-backdrop {
+                background: rgba(0,0,0,0.5);
+                backdrop-filter: blur(4px);
+            }
         }
     </style>
 </head>
 <body class="bg-neutral min-h-screen font-sans text-dark">
-    <div class="container mx-auto px-4 py-6 max-w-2xl">
-        <!-- Header -->
-        <header class="text-center mb-8 card-enter">
-            <div class="inline-flex items-center justify-center bg-primary/10 text-primary rounded-full p-3 mb-3">
-                <i class="fa fa-bell-o text-2xl"></i>
+    <div class="container mx-auto px-4 py-6 max-w-2xl relative">
+        <!-- IKON MAKLUM BALAS DI ATAS KANAN -->
+        <button id="feedbackIcon"
+            class="absolute top-0 right-0 text-secondary hover:text-secondary/80 text-2xl p-2 rounded-full bg-white shadow-md btn-hover z-10"
+            title="Maklum Balas">
+            <i class="fa fa-commenting-o"></i>
+        </button>
+
+        <!-- IMEJ BE-FAST DENGAN IKON DI ATAS TAJUK -->
+        <div class="flex items-center gap-3 mb-6 card-enter">
+            <div class="flex-shrink-0 bg-primary/10 text-primary rounded-full p-2">
+                <i class="fa fa-bolt text-xl"></i>
             </div>
+            <img 
+                src="https://health.choc.org/wp-content/uploads/2022/11/BEFAST-Stroke.png" 
+                alt="BE-FAST Tanda Amaran Strok" 
+                class="flex-1 h-auto rounded-lg shadow-md object-cover"
+            >
+        </div>
+
+        <!-- MODAL MAKLUM BALAS -->
+        <div id="feedbackModal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md card-enter">
+                <div class="p-5 border-b border-gray-100 flex items-center justify-between">
+                    <h3 class="font-bold text-lg text-secondary flex items-center gap-2">
+                        <i class="fa fa-commenting-o"></i> Maklum Balas
+                    </h3>
+                    <button id="closeModal" class="text-gray-400 hover:text-gray-600 text-xl">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+                <div class="p-5 space-y-4">
+                    <p class="text-sm text-gray-600">Sila kongsi pandangan anda untuk menambah baik sistem ini.</p>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Komen / Cadangan</label>
+                        <textarea id="komenMaklumBalas" rows="4" placeholder="Tulis komen, cadangan atau masalah yang dihadapi..."
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg input-focus outline-none resize-none"></textarea>
+                    </div>
+                    <button id="hantarMaklumBalas"
+                        class="w-full bg-secondary hover:bg-secondary/90 text-white font-semibold py-2.5 px-5 rounded-lg btn-hover flex items-center justify-center gap-2">
+                        <i class="fa fa-envelope"></i> Hantar Mel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL PRATONTON LAPORAN -->
+        <div id="previewModal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col card-enter">
+                <div class="p-5 border-b border-gray-100 flex items-center justify-between">
+                    <h3 class="font-bold text-lg text-primary flex items-center gap-2">
+                        <i class="fa fa-file-text-o"></i> Pratonton & Sahkan Laporan
+                    </h3>
+                    <button id="closePreviewModal" class="text-gray-400 hover:text-gray-600 text-xl">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+                <div class="p-5 overflow-y-auto flex-1">
+                    <p class="text-sm text-gray-600 mb-4">Semak dan sunting laporan di bawah sebelum dihantar:</p>
+                    <textarea id="editableReport" rows="18"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus outline-none resize-y text-sm leading-relaxed bg-gray-50 font-mono"></textarea>
+                </div>
+                <div class="p-5 border-t border-gray-100 space-y-3">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="sahkanLaporan" class="accent-primary">
+                        <span class="text-sm font-medium text-gray-700">Saya mengesahkan maklumat di atas adalah tepat dan lengkap</span>
+                    </label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button id="kembaliBtn"
+                            class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2.5 px-5 rounded-lg btn-hover">
+                            <i class="fa fa-pencil"></i> Kembali & Sunting
+                        </button>
+                        <button id="hantarWhatsAppBtn" disabled
+                            class="bg-accent hover:bg-accent/90 text-white font-bold py-2.5 px-5 rounded-lg shadow-lg btn-hover flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i class="fa fa-whatsapp"></i> Hantar ke WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header Utama -->
+        <header class="text-center mb-8 card-enter">
             <h1 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-primary">NOTIFIKASI AWAL KES STROKE</h1>
             <p class="text-lg font-semibold text-secondary mt-1">Sistem Laporan BE-FAST</p>
         </header>
@@ -71,31 +152,28 @@
                     <h2 class="text-lg font-bold text-dark mb-4 flex items-center gap-2">
                         <i class="fa fa-user-circle text-secondary"></i> Maklumat Pesakit & Kejadian
                     </h2>
-                    
                     <div class="space-y-3">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Tarikh jumpa pesakit</label>
-                                <input type="date" id="tarikh" 
+                                <input type="date" id="tarikh"
                                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg input-focus outline-none cursor-pointer">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Masa jumpa pesakit</label>
-                                <input type="time" id="masaJumpa" 
+                                <input type="time" id="masaJumpa"
                                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg input-focus outline-none cursor-pointer">
                             </div>
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Nama pesakit</label>
-                            <input type="text" id="nama" placeholder="Nama penuh pesakit" 
+                            <input type="text" id="nama" placeholder="Nama penuh pesakit"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg input-focus outline-none">
                         </div>
-                        
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Umur</label>
-                                <input type="text" id="umur" placeholder="Tahun" 
+                                <input type="text" id="umur" placeholder="Tahun"
                                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg input-focus outline-none">
                             </div>
                             <div>
@@ -107,16 +185,14 @@
                                 </select>
                             </div>
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">No. Kad Pengenalan</label>
-                            <input type="text" id="ic" placeholder="Contoh: 900101-10-xxxx" 
+                            <input type="text" id="ic" placeholder="Contoh: 900101-10-xxxx"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg input-focus outline-none">
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Lokasi kejadian</label>
-                            <input type="text" id="lokasi" placeholder="Alamat atau tempat kejadian" 
+                            <input type="text" id="lokasi" placeholder="Alamat atau tempat kejadian"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg input-focus outline-none">
                         </div>
                     </div>
@@ -127,7 +203,6 @@
                     <h2 class="text-lg font-bold text-dark mb-4 flex items-center gap-2">
                         <i class="fa fa-check-square-o text-primary"></i> Pemeriksaan BE-FAST
                     </h2>
-                    
                     <div class="space-y-4">
                         <!-- B -->
                         <div class="bg-gray-50 p-3 rounded-lg">
@@ -141,7 +216,6 @@
                                 </label>
                             </div>
                         </div>
-                        
                         <!-- E -->
                         <div class="bg-gray-50 p-3 rounded-lg">
                             <label class="block font-medium mb-2">E — Eyes (Penglihatan kabur / berganda)</label>
@@ -154,7 +228,6 @@
                                 </label>
                             </div>
                         </div>
-                        
                         <!-- F -->
                         <div class="bg-gray-50 p-3 rounded-lg">
                             <label class="block font-medium mb-2">F — Face (Muka senget / tidak sekata)</label>
@@ -167,7 +240,6 @@
                                 </label>
                             </div>
                         </div>
-                        
                         <!-- A -->
                         <div class="bg-gray-50 p-3 rounded-lg">
                             <label class="block font-medium mb-2">A — Arms (Tangan lemah sebelah)</label>
@@ -196,7 +268,6 @@
                                 </div>
                             </div>
                         </div>
-                        
                         <!-- S -->
                         <div class="bg-gray-50 p-3 rounded-lg">
                             <label class="block font-medium mb-2">S — Speech (Bicara pelat / sukar bercakap)</label>
@@ -209,19 +280,18 @@
                                 </label>
                             </div>
                         </div>
-                        
                         <!-- T -->
                         <div class="bg-gray-50 p-3 rounded-lg">
                             <label class="block font-medium mb-2">T — Time (Masa simptom mula dikesan)</label>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 <div>
                                     <label class="block text-sm text-gray-600 mb-1 block">Masa</label>
-                                    <input type="time" id="masaSimptom" 
+                                    <input type="time" id="masaSimptom"
                                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg input-focus outline-none cursor-pointer">
                                 </div>
                                 <div>
                                     <label class="block text-sm text-gray-600 mb-1 block">Tarikh</label>
-                                    <input type="date" id="tarikhSimptom" 
+                                    <input type="date" id="tarikhSimptom"
                                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg input-focus outline-none cursor-pointer">
                                 </div>
                             </div>
@@ -234,35 +304,31 @@
                     <h2 class="text-lg font-bold text-dark mb-4 flex items-center gap-2">
                         <i class="fa fa-heartbeat text-accent"></i> Tanda Vital
                     </h2>
-                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tekanan Darah (BP)</label>
                             <div class="flex items-center gap-2">
-                                <input type="text" id="bpSistolik" placeholder="Sistolik" 
+                                <input type="text" id="bpSistolik" placeholder="Sistolik"
                                     class="flex-1 px-3 py-2.5 border border-gray-300 rounded-lg input-focus outline-none">
                                 <span>/</span>
-                                <input type="text" id="bpDiastolik" placeholder="Diastolik" 
+                                <input type="text" id="bpDiastolik" placeholder="Diastolik"
                                     class="flex-1 px-3 py-2.5 border border-gray-300 rounded-lg input-focus outline-none">
                                 <span class="text-sm text-gray-500">mmHg</span>
                             </div>
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Gula Dalam Darah</label>
                             <div class="flex items-center gap-2">
-                                <input type="text" id="gula" placeholder="Nilai" 
+                                <input type="text" id="gula" placeholder="Nilai"
                                     class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg input-focus outline-none">
                                 <span class="text-sm text-gray-500">mmol/L</span>
                             </div>
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Skor GCS</label>
-                            <input type="text" id="gcs" placeholder="Contoh: 15/15" 
+                            <input type="text" id="gcs" placeholder="Contoh: 15/15"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg input-focus outline-none">
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Ada makan ubat cair darah?</label>
                             <div class="flex gap-4 mt-2">
@@ -275,11 +341,10 @@
                             </div>
                         </div>
                     </div>
-
                     <!-- Lain-lain Tanda Vital -->
                     <div class="mt-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Lain-lain Tanda Vital</label>
-                        <textarea id="vitalLain" rows="3" placeholder="Contoh: Nadi: 80/min, Suhu: 37°C, Pernafasan: 20/min, Keadaan Umum: Sedang..." 
+                        <textarea id="vitalLain" rows="3" placeholder="Contoh: Nadi: 80/min, Suhu: 37°C, Pernafasan: 20/min, Keadaan Umum: Sedang..."
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg input-focus outline-none resize-none"></textarea>
                     </div>
                 </section>
@@ -289,18 +354,16 @@
                     <h2 class="text-lg font-bold text-dark mb-4 flex items-center gap-2">
                         <i class="fa fa-ambulance text-secondary"></i> Maklumat Rujukan & Responder
                     </h2>
-                    
                     <div class="space-y-3">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Anggaran masa tiba (ETA) ke Hospital</label>
                                 <div class="flex items-center gap-2">
-                                    <input type="text" id="eta" placeholder="Masa" 
+                                    <input type="text" id="eta" placeholder="Masa"
                                         class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg input-focus outline-none">
                                     <span class="text-sm text-gray-500">minit</span>
                                 </div>
                             </div>
-                            
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Hospital dituju</label>
                                 <select id="hospitalPilih" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg input-focus outline-none">
@@ -313,24 +376,21 @@
                                 </select>
                             </div>
                         </div>
-                        
                         <!-- Input Manual Hospital Lain -->
                         <div id="hospitalLainGroup" class="hidden">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Nama Hospital Lain</label>
-                            <input type="text" id="hospitalLain" placeholder="Masukkan nama hospital..." 
+                            <input type="text" id="hospitalLain" placeholder="Masukkan nama hospital..."
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg input-focus outline-none">
                         </div>
-                        
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Nama Responder</label>
-                                <input type="text" id="namaResponder" placeholder="Nama anda" 
+                                <input type="text" id="namaResponder" placeholder="Nama anda"
                                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg input-focus outline-none">
                             </div>
-                            
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">No. Telefon Responder</label>
-                                <input type="text" id="telResponder" placeholder="Contoh: 012-3456789" 
+                                <input type="text" id="telResponder" placeholder="Contoh: 012-3456789"
                                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg input-focus outline-none">
                             </div>
                         </div>
@@ -339,17 +399,11 @@
 
                 <!-- Butang Tindakan -->
                 <div class="pt-4 space-y-3">
-                    <button type="button" id="generateBtn" 
+                    <button type="button" id="generateBtn"
                         class="w-full bg-secondary hover:bg-secondary/90 text-white font-bold py-3 px-6 rounded-lg shadow-lg btn-hover flex items-center justify-center gap-2">
-                        <i class="fa fa-file-text-o"></i> Jana Laporan
+                        <i class="fa fa-file-text-o"></i> Jana & Pratonton Laporan
                     </button>
-                    
-                    <button type="button" id="sendBtn" disabled
-                        class="w-full bg-accent hover:bg-accent/90 text-white font-bold py-3 px-6 rounded-lg shadow-lg btn-hover flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <i class="fa fa-whatsapp"></i> Hantar ke WhatsApp
-                    </button>
-                    
-                    <button type="reset" 
+                    <button type="reset"
                         class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2.5 px-6 rounded-lg btn-hover">
                         <i class="fa fa-refresh"></i> Kosongkan Borang
                     </button>
@@ -357,22 +411,45 @@
             </form>
         </main>
 
-        <!-- Pratonton Laporan -->
-        <section id="previewSection" class="hidden bg-white rounded-2xl shadow-card p-6 mb-8 card-enter">
-            <h2 class="text-lg font-bold text-dark mb-4 flex items-center gap-2 text-primary">
-                <i class="fa fa-eye"></i> Pratonton Laporan
-            </h2>
-            <div id="reportPreview" class="whitespace-pre-wrap bg-gray-50 p-4 rounded-lg border text-sm leading-relaxed"></div>
-        </section>
-
         <!-- Footer -->
-        <footer class="text-center text-sm text-gray-500 mt-8">
-            <p>Sistem Laporan Awal Kes Stroke — Protokol BE-FAST</p>
+        <footer class="text-center mt-10 pt-6 border-t border-gray-200 pb-4">
+            <p class="text-sm text-gray-500">Sistem Laporan Awal Kes Stroke — Protokol BE-FAST</p>
+            <p class="text-sm font-medium text-dark mt-2">© Hak Cipta Terpelihara — PHCHTAR (AMZ STUDIO)</p>
         </footer>
     </div>
 
     <script>
-        // Tunjuk/sembunyikan pilihan sisi tangan bila A = YA
+        // === MODAL MAKLUM BALAS ===
+        const feedbackIcon = document.getElementById('feedbackIcon');
+        const feedbackModal = document.getElementById('feedbackModal');
+        const closeModal = document.getElementById('closeModal');
+
+        feedbackIcon.addEventListener('click', () => {
+            feedbackModal.classList.remove('hidden');
+            feedbackModal.classList.add('flex');
+        });
+
+        closeModal.addEventListener('click', () => {
+            feedbackModal.classList.add('hidden');
+            feedbackModal.classList.remove('flex');
+        });
+
+        feedbackModal.addEventListener('click', (e) => {
+            if (e.target === feedbackModal) {
+                feedbackModal.classList.add('hidden');
+                feedbackModal.classList.remove('flex');
+            }
+        });
+
+        document.getElementById('hantarMaklumBalas').addEventListener('click', () => {
+            const komen = document.getElementById('komenMaklumBalas').value.trim() || 'Tiada komen khusus';
+            const subjek = encodeURIComponent('MAKLUM BALAS: Sistem Laporan BE-FAST');
+            const isi = encodeURIComponent(`Komen / Cadangan:\n\n${komen}`);
+            const penerima = 'zee9w3amz@gmail.com';
+            window.location.href = `mailto:${penerima}?subject=${subjek}&body=${isi}`;
+        });
+
+        // === FUNGSI BANTUAN ===
         document.querySelectorAll('input[name="a"]').forEach(radio => {
             radio.addEventListener('change', function() {
                 const armGroup = document.getElementById('armSideGroup');
@@ -380,24 +457,17 @@
             });
         });
 
-        // Tunjuk/sembunyikan input nama hospital lain
         document.getElementById('hospitalPilih').addEventListener('change', function() {
             const hospitalLainGroup = document.getElementById('hospitalLainGroup');
             hospitalLainGroup.classList.toggle('hidden', this.value !== 'OTHER');
         });
 
-        // Fungsi format tarikh ke format mudah dibaca
         function formatTarikh(inputTarikh) {
             if (!inputTarikh) return '';
             const tarikh = new Date(inputTarikh + 'T00:00:00');
-            return tarikh.toLocaleDateString('ms-MY', { 
-                day: '2-digit', 
-                month: '2-digit', 
-                year: 'numeric' 
-            });
+            return tarikh.toLocaleDateString('ms-MY', { day: '2-digit', month: '2-digit', year: 'numeric' });
         }
 
-        // Fungsi format masa + tambah label pagi/tengah hari/petang/malam
         function formatMasa(inputMasa) {
             if (!inputMasa) return '';
             const [jam, minit] = inputMasa.split(':');
@@ -409,9 +479,7 @@
             return `${jam}:${minit} ${label}`;
         }
 
-        let reportText = '';
-
-        // Fungsi jana laporan
+        // === JANA LAPORAN & TUNJUK MODAL ===
         document.getElementById('generateBtn').addEventListener('click', function() {
             const getVal = (id) => document.getElementById(id)?.value?.trim() || '';
             const getRadio = (name) => {
@@ -419,26 +487,23 @@
                 return el ? el.value : '';
             };
 
-            // Kumpul semua nilai
             const tarikh = getVal('tarikh');
             const masaJumpa = getVal('masaJumpa');
             const tarikhMasaJumpa = (formatTarikh(tarikh) || '__/__/____') + ' — ' + (formatMasa(masaJumpa) || '__:__');
-            
             const nama = getVal('nama');
             const umur = getVal('umur');
             const jantina = getVal('jantina');
             const ic = getVal('ic');
             const lokasi = getVal('lokasi');
-            
             const b = getRadio('b');
             const e = getRadio('e');
             const f = getRadio('f');
             const a = getRadio('a');
             const armSide = getRadio('armSide');
             const s = getRadio('s');
-            
             const masaSimptom = getVal('masaSimptom');
             const tarikhSimptom = getVal('tarikhSimptom');
+            
             let masaSimptomFormat = '';
             if (masaSimptom || tarikhSimptom) {
                 masaSimptomFormat = formatTarikh(tarikhSimptom) || '';
@@ -446,27 +511,22 @@
                 masaSimptomFormat += formatMasa(masaSimptom) || '';
             }
             if (!masaSimptomFormat) masaSimptomFormat = '__:__';
-            
+
             const bpSistolik = getVal('bpSistolik');
             const bpDiastolik = getVal('bpDiastolik');
             const gula = getVal('gula');
             const gcs = getVal('gcs');
             const ubatDarah = getRadio('ubatDarah');
             const vitalLain = getVal('vitalLain');
-            
-            // Dapatkan nama hospital
+
             let hospital = getVal('hospitalPilih');
-            if (hospital === 'OTHER') {
-                hospital = getVal('hospitalLain') || 'Lain-lain';
-            }
-            
+            if (hospital === 'OTHER') hospital = getVal('hospitalLain') || 'Lain-lain';
+
             const eta = getVal('eta');
             const namaResponder = getVal('namaResponder');
             const telResponder = getVal('telResponder');
 
-            // Bentuk teks laporan
-            reportText = `🚨 NOTIFIKASI AWAL KES STROKE - BE-FAST 🚨
-
+            const reportText = `🚨 NOTIFIKASI AWAL KES STROKE - BE-FAST 🚨
 Tarikh / Masa jumpa pesakit: ${tarikhMasaJumpa}
 Nama pesakit: ${nama || '_'}
 Umur / Jantina: ${umur || '_'} / ${jantina || '_'}
@@ -474,7 +534,6 @@ No IC: ${ic || '_'}
 Lokasi kejadian: ${lokasi || '_'}
 
 BE-FAST CHECK:
-
 B - Balance (Hilang keseimbangan / jatuh) : ${b || '_'}
 E - Eyes (Kabur / double vision) : ${e || '_'}
 F - Face (Muka senget) : ${f || '_'}
@@ -496,35 +555,55 @@ Hospital dituju: ${hospital || '_'}
 Nama Responder: ${namaResponder || '_'}
 No tel responder: ${telResponder || '_'}`;
 
-            // Paparkan pratonton
-            document.getElementById('reportPreview').textContent = reportText;
-            document.getElementById('previewSection').classList.remove('hidden');
-            document.getElementById('sendBtn').disabled = false;
-            
-            // Tatal ke pratonton
-            document.getElementById('previewSection').scrollIntoView({ behavior: 'smooth' });
+            // Paparkan dalam modal
+            document.getElementById('editableReport').value = reportText;
+            document.getElementById('sahkanLaporan').checked = false;
+            document.getElementById('hantarWhatsAppBtn').disabled = true;
+            document.getElementById('previewModal').classList.remove('hidden');
+            document.getElementById('previewModal').classList.add('flex');
         });
 
-        // Fungsi hantar ke WhatsApp
-        document.getElementById('sendBtn').addEventListener('click', function() {
-            if (!reportText) return;
-            
-            // Tukar ke format URL WhatsApp
-            const encodedText = encodeURIComponent(reportText);
+        // Tukar status sahkan
+        document.getElementById('sahkanLaporan').addEventListener('change', function() {
+            document.getElementById('hantarWhatsAppBtn').disabled = !this.checked;
+        });
+
+        // Tutup modal pratonton
+        document.getElementById('closePreviewModal').addEventListener('click', () => {
+            document.getElementById('previewModal').classList.add('hidden');
+            document.getElementById('previewModal').classList.remove('flex');
+        });
+
+        // Kembali untuk sunting
+        document.getElementById('kembaliBtn').addEventListener('click', () => {
+            document.getElementById('previewModal').classList.add('hidden');
+            document.getElementById('previewModal').classList.remove('flex');
+        });
+
+        // Hantar ke WhatsApp
+        document.getElementById('hantarWhatsAppBtn').addEventListener('click', function() {
+            const finalText = document.getElementById('editableReport').value.trim();
+            if (!finalText) return;
+            const encodedText = encodeURIComponent(finalText);
             const waUrl = `https://wa.me/?text=${encodedText}`;
-            
-            // Buka dalam tab baharu
             window.open(waUrl, '_blank');
         });
 
-        // Kosongkan borang semula
+        // Tutup bila klik luar
+        document.getElementById('previewModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('previewModal')) {
+                document.getElementById('previewModal').classList.add('hidden');
+                document.getElementById('previewModal').classList.remove('flex');
+            }
+        });
+
+        // Kosongkan borang
         document.getElementById('reportForm').addEventListener('reset', function() {
-            reportText = '';
             setTimeout(() => {
-                document.getElementById('previewSection').classList.add('hidden');
-                document.getElementById('sendBtn').disabled = true;
                 document.getElementById('armSideGroup').classList.add('hidden');
                 document.getElementById('hospitalLainGroup').classList.add('hidden');
+                document.getElementById('previewModal').classList.add('hidden');
+                document.getElementById('previewModal').classList.remove('flex');
             }, 100);
         });
     </script>
